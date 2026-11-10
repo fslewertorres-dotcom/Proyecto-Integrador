@@ -1,0 +1,22 @@
+# Id;PuntoId;TipoResiduo;CapacidadLitros;NivelLitros;TasaBaseLitrosHora
+111;11;Organico;240;147.29;5.42
+112;11;Aprovechable;240;127.45;4.69
+113;11;NoAprovechable;120;60.33;2.22
+121;12;Organico;240;127.18;4.68
+122;12;Aprovechable;240;226.45;4.05
+123;12;NoAprovechable;120;52.18;1.92
+131;13;Organico;240;133.98;4.93
+132;13;Aprovechable;240;115.77;4.26
+133;13;NoAprovechable;120;54.9;2.02
+141;14;Organico;240;117.94;4.34
+142;14;Aprovechable;240;101.91;3.75
+143;14;NoAprovechable;120;48.37;1.78
+211;21;Aprovechable;120;38.13;0.8
+212;21;NoAprovechable;120;23.83;0.5
+221;22;Aprovechable;120;12.76;0.4
+222;22;NoAprovechable;60;11.2;0.2
+231;23;Organico;120;49.65;0.8
+232;23;Aprovechable;120;75.04;0.6
+233;23;NoAprovechable;120;31.03;0.5
+241;24;Aprovechable;60;19.41;0.3
+242;24;NoAprovechable;60;19.41;0.3

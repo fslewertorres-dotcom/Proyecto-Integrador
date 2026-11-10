@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>RutaCircular</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Los archivos de datos se copian junto al .exe (bin\Debug\net10.0-windows\Data).
+       PreserveNewest: solo se copian si el de la carpeta Data del proyecto es más nuevo,
+       así no se pierden los cambios que hace el programa al guardar. -->
+  <ItemGroup>
+    <None Update="Data\*.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Le indica a Visual Studio cuáles archivos son formularios, para abrirlos en el diseñador. -->
+  <ItemGroup>
+    <Compile Update="Presentation\FrLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrPuntos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrContenedores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrMapa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrHistorico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrCalculos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrIndicadores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrRendimiento.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\FrVias.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Presentation\GraficoNivel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Presentation\PanelMapa.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>
