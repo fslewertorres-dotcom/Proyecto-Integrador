@@ -4,6 +4,7 @@ namespace RutaCircular.Tools
     /// Colores y estilos del programa, en un solo lugar.
     /// Paleta "ecológica": verdes para la interfaz, ámbar para la ruta y rojo/amarillo para las alertas.
     /// </summary>
+    /// herramienta de los temas 
     internal static class Tema
     {
         public static readonly Color VerdeOscuro = Color.FromArgb(30, 86, 49);
