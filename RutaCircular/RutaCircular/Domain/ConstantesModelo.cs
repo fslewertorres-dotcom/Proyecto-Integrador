@@ -31,5 +31,7 @@ namespace RutaCircular.Domain
         public const double MinutosPorContenedor = 2;
         /// <summary>Costo por hora del operario (supuesto, COP).</summary>
         public const double CostoHoraOperario = 9000;
+
+        //hola perras :)
     }
 }
