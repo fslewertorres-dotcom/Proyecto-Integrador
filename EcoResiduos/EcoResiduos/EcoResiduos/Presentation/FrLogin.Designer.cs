@@ -65,7 +65,6 @@ namespace EcoResiduos.Presentation
             lblMarca.Size = new Size(191, 41);
             lblMarca.TabIndex = 1;
             lblMarca.Text = "EcoResiduos";
-            lblMarca.Click += lblMarca_Click;
             // 
             // lblLema
             // 

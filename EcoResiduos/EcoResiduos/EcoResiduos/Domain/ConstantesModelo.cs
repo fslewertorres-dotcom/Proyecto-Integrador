@@ -25,6 +25,10 @@ namespace EcoResiduos.Domain
         public const double UmbralObligatorio = 0.80;
         /// <summary>Entra a la ruta todo contenedor que se llene en menos de estas horas.</summary>
         public const double HorizonteRutaHoras = 24;
+        /// <summary>Las zonas sociales (piscina, gimnasio, asados, parque) entran a la ruta desde este porcentaje.</summary>
+        public const double UmbralZonaSocial = 0.30;
+        /// <summary>"Aprovechar el viaje": si el operario ya pasa por el punto, vacía los que estén desde este porcentaje.</summary>
+        public const double UmbralAprovecharViaje = 0.40;
         /// <summary>Velocidad del operario empujando el carro (≈ 0,8 m/s).</summary>
         public const double VelocidadMetrosPorMinuto = 48;
         /// <summary>Tiempo para vaciar un contenedor en el carro.</summary>

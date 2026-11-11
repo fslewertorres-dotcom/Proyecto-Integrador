@@ -21,6 +21,16 @@ namespace EcoResiduos.Presentation
         private bool _rutaTerminada;
         private readonly List<PasoRuta> _pasos = new List<PasoRuta>();
 
+        /// <summary>
+        /// Contenedores que se vacían en cada parada, guardados al calcular la ruta. Así la lista
+        /// paso a paso no cambia (ni muestra "vacía 0 contenedores") cuando la prioridad se recalcula
+        /// después de vaciar contenedores.
+        /// </summary>
+        private readonly Dictionary<long, List<Contenedor>> _vaciarPorParada = new Dictionary<long, List<Contenedor>>();
+
+        /// <summary>Huella de los datos con los que se calculó la pantalla; si cambia, el mapa se actualiza al volver.</summary>
+        private int _firmaDatos;
+
         // ---- Estado de la animación del carrito ----
         private List<Coordenada> _camino = new List<Coordenada>();   // puntos (en metros) por donde pasa
         private List<long> _nodosCamino = new List<long>();           // Id del punto en cada posición del camino
@@ -55,10 +65,53 @@ namespace EcoResiduos.Presentation
             }
         }
 
-        /// <summary>Al volver a esta ventana se redibuja (por si se calcularon ubicaciones óptimas en otra).</summary>
+        /// <summary>
+        /// Al volver a esta ventana se actualiza sola: si en otra ventana cambiaron los contenedores,
+        /// las ubicaciones, las vías o el reloj, se vuelve a armar el grafo y la prioridad.
+        /// La ruta calculada se descarta porque ya no corresponde a los datos nuevos.
+        /// </summary>
         private void FrMapa_Activated(object? sender, EventArgs e)
         {
-            panelMapa.Invalidate();
+            if (Animando || _firmaDatos == FirmaDatos())
+            {
+                panelMapa.Invalidate();   // por si se calcularon o quitaron ubicaciones óptimas
+                return;
+            }
+
+            try
+            {
+                _grafo = _ctx.ConstruirGrafo();
+                _ruta = null;
+                _rutaTerminada = false;
+                _vaciarPorParada.Clear();
+                panelMapa.ReiniciarAnimacion();
+                Recalcular();
+            }
+            catch (Exception ex)
+            {
+                Tool.MostrarError(ex);
+            }
+        }
+
+        /// <summary>Resume en un número los datos que usa el mapa (reloj, ubicaciones, vías y contenedores).</summary>
+        private int FirmaDatos()
+        {
+            HashCode firma = new HashCode();
+            firma.Add(_ctx.Reloj);
+            foreach (PuntoRecoleccion p in _ctx.Puntos.GetAll())
+            {
+                firma.Add(p.Id); firma.Add(p.Tipo); firma.Add(p.X); firma.Add(p.Y); firma.Add(p.Nombre);
+            }
+            foreach (Via v in _ctx.Vias.GetAll())
+            {
+                firma.Add(v.Id); firma.Add(v.OrigenId); firma.Add(v.DestinoId); firma.Add(v.DistanciaMetros);
+            }
+            foreach (Contenedor c in _ctx.Contenedores.GetAll())
+            {
+                firma.Add(c.Id); firma.Add(c.PuntoId); firma.Add(c.Tipo);
+                firma.Add(c.CapacidadLitros); firma.Add(c.NivelLitros); firma.Add(c.TasaBaseLitrosHora);
+            }
+            return firma.ToHashCode();
         }
 
         private bool Animando
@@ -85,9 +138,19 @@ namespace EcoResiduos.Presentation
                     i.Motivo
                 })
                 .ToList();
+            // El motivo se ve completo; las demás columnas se reparten el resto del ancho.
+            if (dgvPrioridad.Columns.Contains("Motivo"))
+                dgvPrioridad.Columns["Motivo"]!.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             lblReloj.Text = Formato.Nombre(_ctx.Reloj.DayOfWeek) + " " + _ctx.Reloj.ToString("dd/MM/yyyy  HH:mm");
             MostrarResumen();
             panelMapa.Actualizar(_ctx, _ruta);
+            _firmaDatos = FirmaDatos();
+        }
+
+        /// <summary>Contenedores que se vacían en la parada (los guardados al calcular la ruta).</summary>
+        private List<Contenedor> ContenedoresDeParada(long puntoId)
+        {
+            return _vaciarPorParada.TryGetValue(puntoId, out List<Contenedor>? lista) ? lista : new List<Contenedor>();
         }
 
         private void MostrarResumen()
@@ -132,7 +195,7 @@ namespace EcoResiduos.Presentation
                 foreach (long id in _ruta.Paradas)
                 {
                     PuntoRecoleccion? punto = _ctx.Puntos.GetById(id);
-                    List<Contenedor> aVaciar = ServicioPrioridad.ContenedoresEnRutaDe(_prioridad, id);
+                    List<Contenedor> aVaciar = ContenedoresDeParada(id);
                     List<string> tipos = new List<string>();
                     foreach (Contenedor c in aVaciar) tipos.Add(Formato.Nombre(c.Tipo).ToLower());
 
@@ -179,7 +242,11 @@ namespace EcoResiduos.Presentation
             {
                 panelMapa.ReiniciarAnimacion();
                 _rutaTerminada = false;
+                _vaciarPorParada.Clear();
                 List<long> paradas = ServicioPrioridad.PuntosEnRuta(_prioridad);
+                foreach (long id in paradas)
+                    _vaciarPorParada[id] = ServicioPrioridad.ContenedoresEnRutaDe(_prioridad, id);
+
                 if (paradas.Count == 0)
                 {
                     _ruta = null;
@@ -311,7 +378,7 @@ namespace EcoResiduos.Presentation
                 return false;
 
             long operario = Sesion.UsuarioActual != null ? Sesion.UsuarioActual.Id : 0;
-            foreach (Contenedor c in ServicioPrioridad.ContenedoresEnRutaDe(_prioridad, puntoId))
+            foreach (Contenedor c in ContenedoresDeParada(puntoId))
             {
                 try
                 {
@@ -497,7 +564,7 @@ namespace EcoResiduos.Presentation
             if (e.RowIndex < 0 || !dgvPrioridad.Columns.Contains("Motivo") || e.CellStyle == null) return;
             object? motivo = dgvPrioridad.Rows[e.RowIndex].Cells["Motivo"].Value;
             object? enRuta = dgvPrioridad.Rows[e.RowIndex].Cells["EnRuta"].Value;
-            if (Equals(motivo, "Más del 80 %")) e.CellStyle.BackColor = Color.FromArgb(253, 226, 226);
+            if (motivo is string texto && texto.StartsWith(ServicioPrioridad.MotivoObligatorio)) e.CellStyle.BackColor = Color.FromArgb(253, 226, 226);
             else if (Equals(enRuta, "Sí")) e.CellStyle.BackColor = Color.FromArgb(255, 246, 214);
         }
     }

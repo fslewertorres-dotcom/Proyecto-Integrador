@@ -13,6 +13,10 @@ namespace EcoResiduos.Services
         public const int LongitudMinimaContrasena = 6;
         public static readonly string[] Roles = { "Administrador", "Operario" };
 
+        /// <summary>El conjunto tiene una sola administración: solo puede existir un usuario Administrador.</summary>
+        private const string MensajeUnSoloAdministrador =
+            "Solo puede haber un administrador. Los demás usuarios deben ser operarios.";
+
         private readonly Repository<Usuario, long> _usuarios;
 
         public ServicioUsuarios(Repository<Usuario, long> usuarios)
@@ -25,6 +29,8 @@ namespace EcoResiduos.Services
         {
             ValidarDatos(id, nombreUsuario, nombreCompleto, esNuevo: true);
             ValidarContrasena(contrasena, confirmacion);
+            if (rol == "Administrador" && ContarAdministradores() >= 1)
+                throw new ValidacionException(MensajeUnSoloAdministrador);
 
             Usuario usuario = NuevaInstancia(rol);
             usuario.Id = id;
@@ -42,6 +48,9 @@ namespace EcoResiduos.Services
             Usuario anterior = _usuarios.GetById(id)
                 ?? throw new ValidacionException($"No existe un usuario con el Id {id}.");
             ValidarDatos(id, nombreUsuario, nombreCompleto, esNuevo: false);
+
+            if (!(anterior is Administrador) && rol == "Administrador" && ContarAdministradores() >= 1)
+                throw new ValidacionException(MensajeUnSoloAdministrador);
 
             if (anterior is Administrador && rol != "Administrador")
             {

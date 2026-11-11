@@ -17,12 +17,14 @@ namespace EcoResiduos.Tools
                 form.MdiParent = parent;
                 form.StartPosition = FormStartPosition.Manual;
                 form.Location = PosicionCentrada(parent, form);
+                Tema.BordearListas(form);
                 form.Show();
             }
             else
             {
                 form.WindowState = FormWindowState.Normal;
                 form.BringToFront();
+                form.Activate();   // dispara Activated (el mapa se actualiza al volver a él)
             }
         }
 

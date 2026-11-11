@@ -41,6 +41,12 @@ namespace EcoResiduos.Infraestructure
         /// <summary>Puntos por los que pasó el descenso del gradiente (se dibujan en el mapa).</summary>
         public List<Coordenada> TrayectoriaGradiente { get; } = new List<Coordenada>();
 
+        /// <summary>Ubicación que tenía cada punto antes de moverlo al óptimo (para "Volver a la original").</summary>
+        public Dictionary<long, Coordenada> UbicacionesOriginales { get; } = new Dictionary<long, Coordenada>();
+
+        /// <summary>Largo que tenía cada vía antes de mover uno de sus extremos.</summary>
+        public Dictionary<long, double> DistanciasOriginales { get; } = new Dictionary<long, double>();
+
         private readonly string _rutaReloj;
 
         private Contexto(string carpeta)

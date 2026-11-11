@@ -44,6 +44,8 @@ namespace EcoResiduos.Presentation
             btnOptimizar = new Button();
             btnVerMapa = new Button();
             btnQuitarOptimos = new Button();
+            btnUsarUbicacion = new Button();
+            btnVolverOriginal = new Button();
             pnlActual = new Panel();
             lblActualTitulo = new Label();
             lblActualValor = new Label();
@@ -134,6 +136,8 @@ namespace EcoResiduos.Presentation
             tabGradiente.Controls.Add(pnlOptima);
             tabGradiente.Controls.Add(pnlAhorro);
             tabGradiente.Controls.Add(lblExplicacionGradiente);
+            tabGradiente.Controls.Add(btnUsarUbicacion);
+            tabGradiente.Controls.Add(btnVolverOriginal);
             tabGradiente.BackColor = Color.FromArgb(244, 247, 243);
             tabGradiente.Location = new Point(4, 32);
             tabGradiente.Size = new Size(960, 428);
@@ -472,6 +476,38 @@ namespace EcoResiduos.Presentation
             lblExplicacionGradiente.Text = "¿Cómo se calcula? Se parte de la ubicación actual y se avanza paso a paso en la dirección en que la distancia total baja más rápido (método del gradiente), hasta que ya no se puede mejorar.";
             lblExplicacionGradiente.Name = "lblExplicacionGradiente";
             // 
+            // btnUsarUbicacion
+            // 
+            btnUsarUbicacion.BackColor = Color.FromArgb(46, 125, 79);
+            btnUsarUbicacion.ForeColor = Color.White;
+            btnUsarUbicacion.FlatAppearance.BorderSize = 0;
+            btnUsarUbicacion.FlatStyle = FlatStyle.Flat;
+            btnUsarUbicacion.Cursor = Cursors.Hand;
+            btnUsarUbicacion.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            btnUsarUbicacion.Location = new Point(16, 292);
+            btnUsarUbicacion.Size = new Size(190, 34);
+            btnUsarUbicacion.Text = "Usar esta ubicación";
+            btnUsarUbicacion.UseVisualStyleBackColor = false;
+            btnUsarUbicacion.Enabled = false;
+            btnUsarUbicacion.Name = "btnUsarUbicacion";
+            btnUsarUbicacion.Click += btnUsarUbicacion_Click;
+            // 
+            // btnVolverOriginal
+            // 
+            btnVolverOriginal.BackColor = Color.White;
+            btnVolverOriginal.ForeColor = Color.FromArgb(30, 86, 49);
+            btnVolverOriginal.FlatAppearance.BorderColor = Color.FromArgb(46, 125, 79);
+            btnVolverOriginal.FlatStyle = FlatStyle.Flat;
+            btnVolverOriginal.Cursor = Cursors.Hand;
+            btnVolverOriginal.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            btnVolverOriginal.Location = new Point(214, 292);
+            btnVolverOriginal.Size = new Size(190, 34);
+            btnVolverOriginal.Text = "Volver a la original";
+            btnVolverOriginal.UseVisualStyleBackColor = false;
+            btnVolverOriginal.Enabled = false;
+            btnVolverOriginal.Name = "btnVolverOriginal";
+            btnVolverOriginal.Click += btnVolverOriginal_Click;
+            // 
             // FrCalculos
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -541,6 +577,8 @@ namespace EcoResiduos.Presentation
         private Button btnOptimizar;
         private Button btnVerMapa;
         private Button btnQuitarOptimos;
+        private Button btnUsarUbicacion;
+        private Button btnVolverOriginal;
         private Panel pnlActual;
         private Label lblActualTitulo;
         private Label lblActualValor;

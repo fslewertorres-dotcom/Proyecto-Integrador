@@ -1,5 +1,6 @@
 using EcoResiduos.Domain;
 using EcoResiduos.Infraestructure;
+using EcoResiduos.Services;
 using EcoResiduos.Services.Calculo;
 using EcoResiduos.Tools;
 
@@ -12,6 +13,11 @@ namespace EcoResiduos.Presentation
     public partial class FrCalculos : Form
     {
         private readonly Contexto _ctx = Contexto.Instancia;
+
+        // Último cálculo del gradiente: qué punto ecológico se evaluó y dónde quedaría.
+        private PuntoRecoleccion? _puntoEvaluado;
+        private double _xOptimo;
+        private double _yOptimo;
 
         public FrCalculos()
         {
@@ -27,6 +33,12 @@ namespace EcoResiduos.Presentation
             for (int v = 1; v <= 4; v++)
                 cbAlcance.Items.Add("Vía " + v + " (24 casas)");
             cbAlcance.SelectedIndex = 1;
+            // Al cambiar de vía el resultado anterior ya no aplica: hay que volver a calcular.
+            cbAlcance.SelectedIndexChanged += (s, e) =>
+            {
+                _puntoEvaluado = null;
+                ActualizarBotonesUbicacion();
+            };
         }
 
         // ============================ PREDICCIÓN ============================
@@ -106,10 +118,15 @@ namespace EcoResiduos.Presentation
 
                 // Punto de partida: el punto ecológico actual de esa vía (o el acopio, para todo el conjunto)
                 PuntoRecoleccion inicial = _ctx.ObtenerAcopio();
+                _puntoEvaluado = null;
                 if (via > 0)
                 {
                     PuntoRecoleccion? puntoVia = PuntoEcologicoDeVia(via);
-                    if (puntoVia != null) inicial = puntoVia;
+                    if (puntoVia != null)
+                    {
+                        inicial = puntoVia;
+                        _puntoEvaluado = puntoVia;   // solo un punto ecológico de una vía se puede mover
+                    }
                 }
 
                 ResultadoOptimizacion r = Optimizacion.UbicacionOptima(casas, inicial.X, inicial.Y);
@@ -133,11 +150,81 @@ namespace EcoResiduos.Presentation
                 _ctx.TrayectoriaGradiente.Clear();
                 foreach (Coordenada paso in r.Trayectoria)
                     _ctx.TrayectoriaGradiente.Add(paso);
+
+                _xOptimo = r.XOptimo;
+                _yOptimo = r.YOptimo;
+                ActualizarBotonesUbicacion();
             }
             catch (Exception ex)
             {
                 Tool.MostrarError(ex);
             }
+        }
+
+        /// <summary>
+        /// "Usar esta ubicación" solo aplica a un punto ecológico de una vía (no al conjunto completo)
+        /// y solo si el óptimo está a más de 1 m de donde ya está; "Volver a la original" solo si ya se movió.
+        /// </summary>
+        private void ActualizarBotonesUbicacion()
+        {
+            bool puedeUsar = false;
+            bool puedeVolver = false;
+            if (_puntoEvaluado != null)
+            {
+                double distancia = Math.Sqrt(Math.Pow(_puntoEvaluado.X - _xOptimo, 2) + Math.Pow(_puntoEvaluado.Y - _yOptimo, 2));
+                puedeUsar = distancia > 1;
+                puedeVolver = ServicioUbicacion.TieneOriginal(_ctx, _puntoEvaluado.Id);
+            }
+            btnUsarUbicacion.Enabled = puedeUsar;
+            btnVolverOriginal.Enabled = puedeVolver;
+        }
+
+        private void btnUsarUbicacion_Click(object? sender, EventArgs e)
+        {
+            if (_puntoEvaluado == null) return;
+            try
+            {
+                DialogResult r = MessageBox.Show(
+                    "¿Mover «" + _puntoEvaluado.Nombre + "» a (" + _xOptimo.ToString("0") + ", " + _yOptimo.ToString("0") + ") m?\n\n" +
+                    "También se recalcula el largo de las vías que llegan a ese punto. " +
+                    "Puede deshacerlo con «Volver a la original».",
+                    "Usar esta ubicación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (r != DialogResult.Yes) return;
+
+                ServicioUbicacion.Mover(_ctx, _puntoEvaluado.Id, _xOptimo, _yOptimo);
+                MostrarUbicacionActual();
+                ActualizarBotonesUbicacion();
+            }
+            catch (Exception ex)
+            {
+                Tool.MostrarError(ex);
+            }
+        }
+
+        private void btnVolverOriginal_Click(object? sender, EventArgs e)
+        {
+            if (_puntoEvaluado == null) return;
+            try
+            {
+                ServicioUbicacion.Restaurar(_ctx, _puntoEvaluado.Id);
+                MostrarUbicacionActual();
+                ActualizarBotonesUbicacion();
+            }
+            catch (Exception ex)
+            {
+                Tool.MostrarError(ex);
+            }
+        }
+
+        /// <summary>Actualiza la tarjeta "Ubicación actual" después de mover o devolver el punto.</summary>
+        private void MostrarUbicacionActual()
+        {
+            if (_puntoEvaluado == null) return;
+            lblActualValor.Text = "(" + _puntoEvaluado.X.ToString("0") + ", " + _puntoEvaluado.Y.ToString("0") + ") m";
+            lblActualDetalle.Text = _puntoEvaluado.Nombre + "\n" +
+                (ServicioUbicacion.TieneOriginal(_ctx, _puntoEvaluado.Id)
+                    ? "Movido a la ubicación óptima (aún sin guardar en archivo)."
+                    : "En su ubicación original.");
         }
 
         /// <summary>El punto ecológico más cercano al centro de la vía indicada.</summary>
