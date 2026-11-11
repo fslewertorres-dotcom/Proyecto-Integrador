@@ -37,6 +37,7 @@ namespace EcoResiduos.Presentation
                     TasaBase = c.TasaBaseLitrosHora
                 })
                 .ToList();
+            Tema.AjustarColumnas(dgvContenedores, "Punto", "Tipo");
             _cargando = false;
         }
 

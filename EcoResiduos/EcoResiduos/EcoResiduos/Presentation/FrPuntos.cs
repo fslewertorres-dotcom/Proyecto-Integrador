@@ -33,6 +33,7 @@ namespace EcoResiduos.Presentation
                     Casas = p.CasasAtendidas
                 })
                 .ToList();
+            Tema.AjustarColumnas(dgvPuntos, "Nombre", "Tipo");
             _cargando = false;
         }
 

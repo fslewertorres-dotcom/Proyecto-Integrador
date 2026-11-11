@@ -45,6 +45,28 @@ namespace EcoResiduos.Tools
             tabla.RowHeadersVisible = false;
         }
 
+        /// <summary>
+        /// Las columnas de texto indicadas toman el ancho de su contenido más largo (se ven completas);
+        /// las demás se reparten el espacio restante sin quedar más angostas que su encabezado.
+        /// Se llama después de asignar el DataSource.
+        /// </summary>
+        public static void AjustarColumnas(DataGridView tabla, params string[] columnasDeTexto)
+        {
+            foreach (DataGridViewColumn columna in tabla.Columns)
+            {
+                if (columnasDeTexto.Contains(columna.Name))
+                {
+                    columna.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                }
+                else
+                {
+                    columna.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    columna.MinimumWidth = columna.GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                    columna.FillWeight = columna.Name == "Id" ? 60 : 100;
+                }
+            }
+        }
+
         /// <summary>Menú y barra de estado con los colores del programa.</summary>
         public static void EstilizarMenu(MenuStrip menu)
         {

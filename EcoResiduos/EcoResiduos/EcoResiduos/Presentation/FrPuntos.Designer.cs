@@ -72,7 +72,7 @@ namespace EcoResiduos.Presentation
             lblTitulo.Font = new Font("Segoe UI", 15F, FontStyle.Bold);
             lblTitulo.ForeColor = Color.White;
             lblTitulo.Location = new Point(20, 8);
-            lblTitulo.Text = "Puntos de recolección";
+            lblTitulo.Text = "Ubicaciones del mapa";
             lblTitulo.Name = "lblTitulo";
             // 
             // lblSubtitulo
@@ -99,7 +99,7 @@ namespace EcoResiduos.Presentation
             lblTablaTitulo.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblTablaTitulo.ForeColor = Color.FromArgb(30, 86, 49);
             lblTablaTitulo.Location = new Point(16, 12);
-            lblTablaTitulo.Text = "Puntos registrados";
+            lblTablaTitulo.Text = "Ubicaciones registradas";
             lblTablaTitulo.Name = "lblTablaTitulo";
             // 
             // dgvPuntos
@@ -151,7 +151,7 @@ namespace EcoResiduos.Presentation
             lblFormTitulo.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblFormTitulo.ForeColor = Color.FromArgb(30, 86, 49);
             lblFormTitulo.Location = new Point(16, 12);
-            lblFormTitulo.Text = "Datos del punto";
+            lblFormTitulo.Text = "Datos de la ubicación";
             lblFormTitulo.Name = "lblFormTitulo";
             // 
             // lblId
@@ -363,7 +363,7 @@ namespace EcoResiduos.Presentation
             ClientSize = new Size(1000, 560);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            Text = "Puntos de recolección";
+            Text = "Ubicaciones del mapa";
             Controls.Add(pnlEncabezado);
             Controls.Add(pnlTabla);
             Controls.Add(pnlFormulario);

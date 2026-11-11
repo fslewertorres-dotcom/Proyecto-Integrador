@@ -81,7 +81,7 @@ namespace EcoResiduos.Presentation
             // mnuPuntos
             // 
             mnuPuntos.Name = "mnuPuntos";
-            mnuPuntos.Text = "Puntos de recolección";
+            mnuPuntos.Text = "Ubicaciones del mapa";
             mnuPuntos.Click += mnuPuntos_Click;
             // 
             // mnuContenedores
