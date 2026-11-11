@@ -32,5 +32,10 @@ namespace EcoResiduos.Presentation
                 txtContrasena.Focus();
             }
         }
+
+        private void lblMarca_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
