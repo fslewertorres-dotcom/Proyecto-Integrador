@@ -1,5 +1,6 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Reflection;
 using EcoResiduos.Domain;
 using EcoResiduos.Infraestructure;
 using EcoResiduos.Tools;
@@ -27,7 +28,7 @@ namespace EcoResiduos.Presentation
         public bool VolverAlLogin { get; private set; }
 
         /// <summary>Opacidad de la imagen de contenedores del fondo (0 = invisible, 1 = normal).</summary>
-        private const float OpacidadFondo = 0.12f;
+        private const float OpacidadFondo = 0.16f;
 
         /// <summary>Imagen de contenedores incrustada en el .exe (Recursos/contenedores.png). Se carga una sola vez.</summary>
         private static readonly Image? ImagenFondo = CargarImagenFondo();
@@ -55,7 +56,10 @@ namespace EcoResiduos.Presentation
                 if (control is MdiClient area)
                 {
                     _areaHijos = area;
-                    area.BackColor = Tema.Fondo;
+                    area.BackColor = FondoAzulArriba;
+                    // Doble búfer: el degradado se pinta completo en memoria y no parpadea al redimensionar.
+                    typeof(Control).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance)
+                                   ?.SetValue(area, true);
                     area.Paint += AreaHijos_Paint;
                     area.Resize += (s, e) => area.Invalidate();
                 }
@@ -66,30 +70,87 @@ namespace EcoResiduos.Presentation
         {
             if (_areaHijos == null) return;
             Graphics g = e.Graphics;
-            DibujarImagenFondo(g, _areaHijos.ClientSize);
+            Size area = _areaHijos.ClientSize;
+            if (area.Width <= 0 || area.Height <= 0) return;
 
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            int centroX = _areaHijos.ClientSize.Width / 2;
+            // Capa 1 (atrás): degradado azul suave.
+            DibujarCapaAzul(g, area);
+            // Capa 2 (medio): contenedores con su propia sombra, para que se despeguen del fondo.
+            DibujarImagenFondo(g, area);
+
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            int centroX = area.Width / 2;
 
             using (Font icono = new Font("Segoe UI Symbol", 48F))
             using (Font titulo = new Font("Segoe UI", 26F, FontStyle.Bold))
             using (Font texto = new Font("Segoe UI", 11F))
-            using (SolidBrush verde = new SolidBrush(Color.FromArgb(120, Tema.Verde)))
+            using (SolidBrush verde = new SolidBrush(Color.FromArgb(210, Tema.Verde)))
             using (SolidBrush oscuro = new SolidBrush(Tema.VerdeOscuro))
             using (SolidBrush suave = new SolidBrush(Tema.TextoSuave))
             {
                 // Se mide el alto real de las tres líneas para centrar el bloque completo en la ventana.
-                float altoIcono = g.MeasureString("♻", icono).Height;
-                float altoTitulo = g.MeasureString("EcoResiduos", titulo).Height;
-                float altoTexto = g.MeasureString("Gestión de residuos", texto).Height;
-                float altoBloque = altoIcono + altoTitulo + altoTexto;
+                SizeF tamIcono = g.MeasureString("♻", icono);
+                SizeF tamTitulo = g.MeasureString("EcoResiduos", titulo);
+                SizeF tamTexto = g.MeasureString("Gestión de residuos", texto);
+                float altoBloque = tamIcono.Height + tamTitulo.Height + tamTexto.Height;
+                float anchoBloque = Math.Max(tamTitulo.Width, Math.Max(tamIcono.Width, tamTexto.Width));
 
-                int y = (int)((_areaHijos.ClientSize.Height - altoBloque) / 2);
-                DibujarCentrado(g, "♻", icono, verde, centroX, y);
-                y += (int)altoIcono;
-                DibujarCentrado(g, "EcoResiduos", titulo, oscuro, centroX, y);
-                y += (int)altoTitulo;
-                DibujarCentrado(g, "Gestión de residuos", texto, suave, centroX, y);
+                int y = (int)((area.Height - altoBloque) / 2);
+
+                // Capa 3 (frente): halo claro detrás del logo y los textos, que los separa de la imagen.
+                DibujarHalo(g, centroX, y + altoBloque / 2, anchoBloque, altoBloque);
+
+                DibujarCentradoConSombra(g, "♻", icono, verde, centroX, y);
+                y += (int)tamIcono.Height;
+                DibujarCentradoConSombra(g, "EcoResiduos", titulo, oscuro, centroX, y);
+                y += (int)tamTitulo.Height;
+                DibujarCentradoConSombra(g, "Gestión de residuos", texto, suave, centroX, y);
+            }
+        }
+
+        /// <summary>Tonos del fondo azul (muy suaves, combinan con el verde del menú y la barra de estado).</summary>
+        private static readonly Color FondoAzulArriba = Color.FromArgb(240, 246, 251);
+        private static readonly Color FondoAzulAbajo = Color.FromArgb(220, 233, 244);
+
+        /// <summary>Capa de fondo: degradado vertical azul con una luz suave en el centro.</summary>
+        private static void DibujarCapaAzul(Graphics g, Size area)
+        {
+            Rectangle todo = new Rectangle(Point.Empty, area);
+            using (var degradado = new LinearGradientBrush(todo, FondoAzulArriba, FondoAzulAbajo, LinearGradientMode.Vertical))
+            {
+                g.FillRectangle(degradado, todo);
+            }
+
+            // Luz central: da profundidad para que el fondo no se vea plano.
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            RectangleF luz = new RectangleF(-area.Width * 0.15f, -area.Height * 0.10f, area.Width * 1.30f, area.Height * 1.20f);
+            using (var ruta = new GraphicsPath())
+            {
+                ruta.AddEllipse(luz);
+                using (var brillo = new PathGradientBrush(ruta))
+                {
+                    brillo.CenterColor = Color.FromArgb(150, 255, 255, 255);
+                    brillo.SurroundColors = new[] { Color.FromArgb(0, 255, 255, 255) };
+                    g.FillRectangle(brillo, todo);
+                }
+            }
+        }
+
+        /// <summary>Halo blanco difuminado que deja el logo y los textos al frente.</summary>
+        private static void DibujarHalo(Graphics g, float centroX, float centroY, float anchoBloque, float altoBloque)
+        {
+            float ancho = anchoBloque + 220;
+            float alto = altoBloque + 110;
+            using (var ruta = new GraphicsPath())
+            {
+                ruta.AddEllipse(centroX - ancho / 2, centroY - alto / 2, ancho, alto);
+                using (var halo = new PathGradientBrush(ruta))
+                {
+                    halo.CenterColor = Color.FromArgb(225, 248, 251, 254);
+                    halo.SurroundColors = new[] { Color.FromArgb(0, 248, 251, 254) };
+                    halo.FocusScales = new PointF(0.45f, 0.35f);   // centro más amplio y borde que se desvanece
+                    g.FillPath(halo, ruta);
+                }
             }
         }
 
@@ -104,20 +165,49 @@ namespace EcoResiduos.Presentation
             int x = (area.Width - ancho) / 2;
             int y = (area.Height - alto) / 2;
 
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            // Sombra: la silueta de los contenedores en azul grisáceo, desplazada y repetida varias
+            // veces con muy poca opacidad para que quede difuminada. Así la imagen "flota" sobre el fondo.
+            var sombra = new ColorMatrix(new[]
+            {
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 0.035f, 0 },
+                new float[] { 60 / 255f, 90 / 255f, 125 / 255f, 0, 1 }   // color de la sombra
+            });
+            using (var atributosSombra = new ImageAttributes())
+            {
+                atributosSombra.SetColorMatrix(sombra);
+                int[,] desplazamientos = { { 6, 9 }, { 9, 12 }, { 12, 16 }, { 4, 6 } };
+                for (int i = 0; i < desplazamientos.GetLength(0); i++)
+                {
+                    g.DrawImage(ImagenFondo,
+                                new Rectangle(x + desplazamientos[i, 0], y + desplazamientos[i, 1], ancho, alto),
+                                0, 0, ImagenFondo.Width, ImagenFondo.Height, GraphicsUnit.Pixel, atributosSombra);
+                }
+            }
+
             var matriz = new ColorMatrix { Matrix33 = OpacidadFondo };   // Matrix33 = canal alfa (transparencia)
             using (var atributos = new ImageAttributes())
             {
                 atributos.SetColorMatrix(matriz);
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.DrawImage(ImagenFondo, new Rectangle(x, y, ancho, alto),
                             0, 0, ImagenFondo.Width, ImagenFondo.Height, GraphicsUnit.Pixel, atributos);
             }
         }
 
-        private static void DibujarCentrado(Graphics g, string texto, Font fuente, Brush pincel, int centroX, int y)
+        /// <summary>Dibuja el texto centrado con una sombra suave debajo, para que resalte al frente.</summary>
+        private static void DibujarCentradoConSombra(Graphics g, string texto, Font fuente, Brush pincel, int centroX, int y)
         {
             SizeF tamano = g.MeasureString(texto, fuente);
-            g.DrawString(texto, fuente, pincel, centroX - tamano.Width / 2, y);
+            float x = centroX - tamano.Width / 2;
+            using (var sombra = new SolidBrush(Color.FromArgb(45, 30, 60, 90)))
+            {
+                g.DrawString(texto, fuente, sombra, x + 1, y + 2);
+            }
+            g.DrawString(texto, fuente, pincel, x, y);
         }
 
         /// <summary>Polimorfismo: cada tipo de usuario dice qué puede hacer, y el menú se arma con eso.</summary>
