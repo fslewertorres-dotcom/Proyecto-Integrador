@@ -35,16 +35,16 @@ namespace EcoResiduos.Presentation
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            using Font fuenteTitulo = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            using Font fuente = new Font("Segoe UI", 8.25F);
+            using Font fuenteTitulo = Tema.Fuente(10.5F, FontStyle.Bold);
+            using Font fuente = Tema.Fuente(8.25F);
             using SolidBrush pincelTitulo = new SolidBrush(Tema.VerdeOscuro);
             using SolidBrush pincelTexto = new SolidBrush(Tema.TextoSuave);
             using Pen lineaGuia = new Pen(Tema.Borde);
 
-            g.DrawString(Titulo, fuenteTitulo, pincelTitulo, 16, 12);
+            g.DrawString(Titulo, fuenteTitulo, pincelTitulo, Tema.Px(16), Tema.Px(12));
 
             // Zona del gráfico
-            int izquierda = 50, arriba = 50, derecha = Width - 20, abajo = Height - 40;
+            int izquierda = Tema.Px(50), arriba = Tema.Px(50), derecha = Width - Tema.Px(20), abajo = Height - Tema.Px(40);
             int alto = abajo - arriba;
             if (alto <= 0 || derecha <= izquierda) return;
 
@@ -54,7 +54,7 @@ namespace EcoResiduos.Presentation
             {
                 int y = abajo - alto * porcentaje / 100;
                 g.DrawLine(lineaGuia, izquierda, y, derecha, y);
-                g.DrawString(porcentaje + " %", fuente, pincelTexto, 8, y - 7);
+                g.DrawString(porcentaje + " %", fuente, pincelTexto, Tema.Px(8), y - Tema.Px(7));
             }
 
             if (_valores.Length == 0)
@@ -86,7 +86,7 @@ namespace EcoResiduos.Presentation
                 if (i < _etiquetas.Length)
                 {
                     SizeF te = g.MeasureString(_etiquetas[i], fuente);
-                    g.DrawString(_etiquetas[i], fuente, pincelTexto, x + (anchoBarra - te.Width) / 2, abajo + 6);
+                    g.DrawString(_etiquetas[i], fuente, pincelTexto, x + (anchoBarra - te.Width) / 2, abajo + Tema.Px(6));
                 }
             }
         }

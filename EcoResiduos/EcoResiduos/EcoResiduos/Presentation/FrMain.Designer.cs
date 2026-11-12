@@ -171,6 +171,7 @@ namespace EcoResiduos.Presentation
             Name = "FrMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "EcoResiduos";
+            WindowState = FormWindowState.Maximized;
             FormClosing += FrMain_FormClosing;
             menuPrincipal.ResumeLayout(false);
             menuPrincipal.PerformLayout();

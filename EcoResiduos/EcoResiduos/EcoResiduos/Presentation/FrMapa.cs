@@ -481,25 +481,25 @@ namespace EcoResiduos.Presentation
             Color colorCirculo = Color.FromArgb(205, 212, 207);
             if (paso.Estado == EstadoPaso.Hecho) colorCirculo = Tema.Verde;
             if (paso.Estado == EstadoPaso.Actual) colorCirculo = Tema.Ambar;
-            Rectangle circulo = new Rectangle(r.Left + 10, r.Top + 5, 24, 24);
+            Rectangle circulo = new Rectangle(r.Left + Tema.Px(10), r.Top + Tema.Px(5), Tema.Px(24), Tema.Px(24));
             using (SolidBrush pincelCirculo = new SolidBrush(colorCirculo))
                 g.FillEllipse(pincelCirculo, circulo);
 
             string numero = paso.Estado == EstadoPaso.Hecho ? "✓" : paso.Numero;
-            using (Font fuenteNumero = new Font("Segoe UI", 8.5F, FontStyle.Bold))
+            using (Font fuenteNumero = Tema.Fuente(8.5F, FontStyle.Bold))
             {
                 SizeF t = g.MeasureString(numero, fuenteNumero);
                 g.DrawString(numero, fuenteNumero, Brushes.White,
                              circulo.X + (circulo.Width - t.Width) / 2, circulo.Y + (circulo.Height - t.Height) / 2);
             }
 
-            using (Font fuenteTitulo = new Font("Segoe UI", 9.5F, FontStyle.Bold))
-            using (Font fuenteDetalle = new Font("Segoe UI", 8.25F))
+            using (Font fuenteTitulo = Tema.Fuente(9.5F, FontStyle.Bold))
+            using (Font fuenteDetalle = Tema.Fuente(8.25F))
             using (SolidBrush pincelTitulo = new SolidBrush(Tema.Texto))
             using (SolidBrush pincelDetalle = new SolidBrush(Tema.TextoSuave))
             {
-                g.DrawString(paso.Titulo, fuenteTitulo, pincelTitulo, r.Left + 44, r.Top + 1);
-                g.DrawString(paso.Detalle, fuenteDetalle, pincelDetalle, r.Left + 44, r.Top + 17);
+                g.DrawString(paso.Titulo, fuenteTitulo, pincelTitulo, r.Left + Tema.Px(44), r.Top + Tema.Px(1));
+                g.DrawString(paso.Detalle, fuenteDetalle, pincelDetalle, r.Left + Tema.Px(44), r.Top + Tema.Px(17));
             }
         }
 

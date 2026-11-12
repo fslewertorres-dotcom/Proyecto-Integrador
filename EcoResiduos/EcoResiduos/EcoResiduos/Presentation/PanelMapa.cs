@@ -144,17 +144,17 @@ namespace EcoResiduos.Presentation
             }
 
             // Entrada
-            using (Font fuente = new Font("Segoe UI", 7.5F, FontStyle.Bold))
+            using (Font fuente = Tema.Fuente(7.5F, FontStyle.Bold))
             using (SolidBrush pincel = new SolidBrush(Tema.VerdeOscuro))
             {
-                PointF entrada = APantalla(10, 152);
+                PointF entrada = APantalla(24, 152);   // a la derecha de la etiqueta "Acopio" para no montarse
                 g.DrawString("▲ ENTRADA", fuente, pincel, entrada.X, entrada.Y);
             }
         }
 
         private void DibujarZonasSociales(Graphics g)
         {
-            using Font fuente = new Font("Segoe UI", 8F, FontStyle.Bold);
+            using Font fuente = Tema.Fuente(8F, FontStyle.Bold);
             foreach (ZonaComun zona in PlanoConjunto.ZonasComunes)
             {
                 Color relleno = Color.FromArgb(201, 232, 190);
@@ -284,7 +284,7 @@ namespace EcoResiduos.Presentation
                     g.DrawLine(lapiz, APantalla(a.X, a.Y), APantalla(b.X, b.Y));
                 }
             }
-            using Font fuente = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            using Font fuente = Tema.Fuente(7.5F, FontStyle.Bold);
             foreach (Coordenada optimo in _ctx.UbicacionesOptimas)
             {
                 PointF c = APantalla(optimo.X, optimo.Y);
@@ -310,8 +310,8 @@ namespace EcoResiduos.Presentation
                 }
             }
 
-            using Font fuente = new Font("Segoe UI", 7F, FontStyle.Bold);
-            using Font fuenteNumero = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            using Font fuente = Tema.Fuente(7F, FontStyle.Bold);
+            using Font fuenteNumero = Tema.Fuente(7.5F, FontStyle.Bold);
             foreach (PuntoRecoleccion punto in _ctx.Puntos.GetAll())
             {
                 PointF c = APantalla(punto.X, punto.Y);
@@ -386,7 +386,7 @@ namespace EcoResiduos.Presentation
             using (Pen borde = new Pen(Color.White, 2))
                 g.DrawRectangle(borde, caja.X, caja.Y, caja.Width, caja.Height);
 
-            using Font fuente = new Font("Segoe UI", 7F, FontStyle.Bold);
+            using Font fuente = Tema.Fuente(7F, FontStyle.Bold);
             SizeF t = g.MeasureString("Operario", fuente);
             RectangleF etiqueta = new RectangleF(c.X - t.Width / 2 - 3, caja.Y - t.Height - 3, t.Width + 6, t.Height);
             using (GraphicsPath camino = Redondeado(etiqueta, 3))
@@ -400,7 +400,7 @@ namespace EcoResiduos.Presentation
         {
             float y = Height - AltoLeyenda + 4;
             float x = 12;
-            using Font fuente = new Font("Segoe UI", 7.5F);
+            using Font fuente = Tema.Fuente(7.5F);
             using SolidBrush texto = new SolidBrush(Tema.TextoSuave);
 
             x = ItemLeyenda(g, x, y, Tema.Verde, "< 50 %", fuente, texto, true);

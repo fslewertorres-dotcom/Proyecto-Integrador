@@ -170,7 +170,7 @@ namespace EcoResiduos.Presentation
             btnPredecir.FlatStyle = FlatStyle.Flat;
             btnPredecir.Cursor = Cursors.Hand;
             btnPredecir.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnPredecir.Location = new Point(446, 36);
+            btnPredecir.Location = new Point(452, 36);
             btnPredecir.Size = new Size(140, 34);
             btnPredecir.Text = "Predecir";
             btnPredecir.UseVisualStyleBackColor = false;
@@ -281,8 +281,8 @@ namespace EcoResiduos.Presentation
             // 
             pnlGrafico.Controls.Add(graficoNivel);
             pnlGrafico.BackColor = Color.White;
-            pnlGrafico.Location = new Point(452, 36);
-            pnlGrafico.Size = new Size(492, 380);
+            pnlGrafico.Location = new Point(452, 80);
+            pnlGrafico.Size = new Size(492, 336);
             pnlGrafico.Name = "pnlGrafico";
             // 
             // graficoNivel
@@ -290,7 +290,7 @@ namespace EcoResiduos.Presentation
             graficoNivel.BackColor = Color.White;
             graficoNivel.Dock = DockStyle.Fill;
             graficoNivel.Location = new Point(0, 0);
-            graficoNivel.Size = new Size(492, 380);
+            graficoNivel.Size = new Size(492, 336);
             graficoNivel.Name = "graficoNivel";
             // 
             // lblInstruccion2

@@ -6,14 +6,18 @@ namespace EcoResiduos.Tools
     {
         /// <summary>
         /// Abre un formulario hijo del MDI centrado en la ventana principal, o lo trae al frente si ya está abierto.
-        /// Los formularios hijos tienen un tamaño fijo para que sus tablas y gráficos se vean bien.
+        /// Los formularios hijos tienen un tamaño fijo; en pantallas grandes se agrandan en proporción (Tema.EscalarFormulario).
         /// </summary>
         public static void openForm<TForm>(Form parent) where TForm : Form, new()
         {
             TForm? form = Application.OpenForms.OfType<TForm>().FirstOrDefault();
             if (form == null || form.IsDisposed)
             {
+                // El factor se calcula antes de crear el formulario: su constructor ya estiliza las tablas con él.
+                MdiClient? area = parent.Controls.OfType<MdiClient>().FirstOrDefault();
+                if (area != null) Tema.CalcularEscala(area.ClientSize);
                 form = new TForm();
+                Tema.EscalarFormulario(form);
                 form.MdiParent = parent;
                 form.StartPosition = FormStartPosition.Manual;
                 form.Location = PosicionCentrada(parent, form);

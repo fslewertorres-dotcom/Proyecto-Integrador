@@ -17,6 +17,68 @@ namespace EcoResiduos.Tools
         public static readonly Color Ambar = Color.FromArgb(242, 159, 5);
         public static readonly Color Rojo = Color.FromArgb(214, 69, 69);
         public static readonly Color Amarillo = Color.FromArgb(242, 201, 76);
+
+        // ========================= TAMAÑO DE LOS FORMULARIOS =========================
+        // Los formularios se diseñaron en ~1000 × 560. En pantallas grandes se agrandan todos en la misma
+        // proporción (controles, letras, tablas y dibujos) para que no se vean pequeños.
+
+        /// <summary>Factor de agrandado actual (1 = tamaño de diseño).</summary>
+        public static float Escala { get; private set; } = 1f;
+
+        /// <summary>Tamaño de referencia del formulario más grande (el mapa, con bordes).</summary>
+        private static readonly Size TamanoReferencia = new Size(1200, 625);
+        private const float EscalaMaxima = 1.5f;
+
+        /// <summary>Calcula el factor para que el formulario más grande ocupe cerca del 85 % del área disponible.</summary>
+        public static void CalcularEscala(Size area)
+        {
+            float fx = area.Width * 0.85f / TamanoReferencia.Width;
+            float fy = area.Height * 0.88f / TamanoReferencia.Height;
+            Escala = Math.Clamp(Math.Min(fx, fy), 1f, EscalaMaxima);
+        }
+
+        /// <summary>Letra Segoe UI del tamaño indicado, ya agrandada según la escala.</summary>
+        public static Font Fuente(float tamano, FontStyle estilo = FontStyle.Regular) =>
+            new Font("Segoe UI", tamano * Escala, estilo);
+
+        /// <summary>Medida en píxeles ya agrandada según la escala.</summary>
+        public static int Px(float valor) => (int)Math.Round(valor * Escala);
+
+        /// <summary>
+        /// Agranda un formulario recién creado: posición y tamaño de cada control (Scale) y sus letras.
+        /// Las tablas ya salen con letra y alto agrandados desde EstilizarTabla.
+        /// </summary>
+        public static void EscalarFormulario(Form form)
+        {
+            if (Escala <= 1.001f) return;
+
+            // 1. Guardar las letras originales antes de tocar nada (los hijos heredan la letra del padre).
+            var letras = new List<(Control control, Font letra)>();
+            Recorrer(form, c => letras.Add((c, c.Font)));
+
+            // 2. Sin autoescalado de WinForms: si no, al cambiar la letra volvería a mover los controles.
+            Recorrer(form, c => { if (c is ContainerControl cc) cc.AutoScaleMode = AutoScaleMode.None; });
+
+            // 3. Posiciones y tamaños
+            form.Scale(new SizeF(Escala, Escala));
+
+            // 4. Letras y altos que Scale no cambia
+            foreach (var (control, letra) in letras)
+                control.Font = new Font(letra.FontFamily, letra.Size * Escala, letra.Style);
+            Recorrer(form, c =>
+            {
+                if (c is ListBox lista && lista.DrawMode == DrawMode.OwnerDrawFixed)
+                    lista.ItemHeight = Px(lista.ItemHeight);
+            });
+        }
+
+        private static void Recorrer(Control raiz, Action<Control> accion)
+        {
+            accion(raiz);
+            foreach (Control hijo in raiz.Controls)
+                Recorrer(hijo, accion);
+        }
+
         public static readonly Color Azul = Color.FromArgb(47, 102, 144);
 
         /// <summary>Le da a una tabla el estilo del programa: encabezado verde y filas alternas.</summary>
@@ -29,19 +91,19 @@ namespace EcoResiduos.Tools
             tabla.EnableHeadersVisualStyles = false;
             tabla.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             tabla.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            tabla.ColumnHeadersHeight = 34;
+            tabla.ColumnHeadersHeight = Px(34);
             tabla.ColumnHeadersDefaultCellStyle.BackColor = VerdeOscuro;
             tabla.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             tabla.ColumnHeadersDefaultCellStyle.SelectionBackColor = VerdeOscuro;
-            tabla.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            tabla.ColumnHeadersDefaultCellStyle.Font = Fuente(9F, FontStyle.Bold);
             tabla.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
-            tabla.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            tabla.DefaultCellStyle.Font = Fuente(9F);
             tabla.DefaultCellStyle.ForeColor = Texto;
             tabla.DefaultCellStyle.SelectionBackColor = VerdeSeleccion;
             tabla.DefaultCellStyle.SelectionForeColor = Texto;
             tabla.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
             tabla.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(247, 251, 248);
-            tabla.RowTemplate.Height = 28;
+            tabla.RowTemplate.Height = Px(28);
             tabla.RowHeadersVisible = false;
         }
 
@@ -86,6 +148,19 @@ namespace EcoResiduos.Tools
         /// </summary>
         public static void AjustarColumnas(DataGridView tabla, params string[] columnasDeTexto)
         {
+            // Si la tabla todavía no se muestra (constructor del formulario), se ajusta cuando aparezca:
+            // para entonces el formulario ya tiene su tamaño final (ver EscalarFormulario).
+            if (!tabla.IsHandleCreated)
+            {
+                void AlCrear(object? s, EventArgs e)
+                {
+                    tabla.HandleCreated -= AlCrear;
+                    AjustarColumnas(tabla, columnasDeTexto);
+                }
+                tabla.HandleCreated += AlCrear;
+                return;
+            }
+
             foreach (DataGridViewColumn columna in tabla.Columns)
             {
                 if (columnasDeTexto.Contains(columna.Name))

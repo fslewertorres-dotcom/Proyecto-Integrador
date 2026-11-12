@@ -97,6 +97,7 @@ namespace EcoResiduos.Presentation
                     f.Kg
                 })
                 .ToList();
+            Tema.AjustarColumnas(dgvFrecuencia, "Punto");   // el nombre del punto se ve completo
 
             // Barra de composición: el ancho de cada color es proporcional a su porcentaje
             int total = pnlBarras.Width;
