@@ -33,7 +33,6 @@ namespace EcoResiduos.Presentation
             cbDestino = new ComboBox();
             lblDistancia = new Label();
             txtDistancia = new TextBox();
-            btnCalcularDistancia = new Button();
             btnAgregar = new Button();
             btnActualizar = new Button();
             btnEliminar = new Button();
@@ -121,7 +120,6 @@ namespace EcoResiduos.Presentation
             pnlFormulario.Controls.Add(cbDestino);
             pnlFormulario.Controls.Add(lblDistancia);
             pnlFormulario.Controls.Add(txtDistancia);
-            pnlFormulario.Controls.Add(btnCalcularDistancia);
             pnlFormulario.Controls.Add(btnAgregar);
             pnlFormulario.Controls.Add(btnActualizar);
             pnlFormulario.Controls.Add(btnEliminar);
@@ -211,27 +209,12 @@ namespace EcoResiduos.Presentation
             txtDistancia.BackColor = Color.FromArgb(240, 245, 241);
             txtDistancia.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
             txtDistancia.ForeColor = Color.FromArgb(30, 86, 49);
-            txtDistancia.Location = new Point(130, 223);
+            txtDistancia.Location = new Point(16, 222);
             txtDistancia.ReadOnly = true;
-            txtDistancia.Size = new Size(190, 25);
+            txtDistancia.Size = new Size(304, 25);
             txtDistancia.TabStop = false;
             txtDistancia.TextAlign = HorizontalAlignment.Center;
             txtDistancia.Name = "txtDistancia";
-            // 
-            // btnCalcularDistancia
-            // 
-            btnCalcularDistancia.BackColor = Color.White;
-            btnCalcularDistancia.ForeColor = Color.FromArgb(30, 86, 49);
-            btnCalcularDistancia.FlatAppearance.BorderColor = Color.FromArgb(46, 125, 79);
-            btnCalcularDistancia.FlatStyle = FlatStyle.Flat;
-            btnCalcularDistancia.Cursor = Cursors.Hand;
-            btnCalcularDistancia.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnCalcularDistancia.Location = new Point(16, 220);
-            btnCalcularDistancia.Size = new Size(106, 30);
-            btnCalcularDistancia.Text = "Calcular";
-            btnCalcularDistancia.UseVisualStyleBackColor = false;
-            btnCalcularDistancia.Name = "btnCalcularDistancia";
-            btnCalcularDistancia.Click += btnCalcularDistancia_Click;
             // 
             // btnAgregar
             // 
@@ -314,7 +297,7 @@ namespace EcoResiduos.Presentation
             lblNota.ForeColor = Color.FromArgb(107, 123, 113);
             lblNota.Location = new Point(16, 406);
             lblNota.Size = new Size(304, 34);
-            lblNota.Text = "La distancia se calcula con las coordenadas de los dos puntos. Después de cambiar vías, vuelva a abrir el mapa.";
+            lblNota.Text = "La distancia se calcula con las coordenadas de los puntos. El mapa se actualiza solo.";
             lblNota.Name = "lblNota";
             // 
             // FrVias
@@ -360,7 +343,6 @@ namespace EcoResiduos.Presentation
         private ComboBox cbDestino;
         private Label lblDistancia;
         private TextBox txtDistancia;
-        private Button btnCalcularDistancia;
         private Button btnAgregar;
         private Button btnActualizar;
         private Button btnEliminar;

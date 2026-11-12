@@ -20,9 +20,9 @@ namespace EcoResiduos.Presentation
             _servicio = new ServicioVias(_ctx);
             ConfigurarCombo(cbOrigen);
             ConfigurarCombo(cbDestino);
-            // Si cambia el origen o el destino, la distancia mostrada ya no vale: se borra hasta pulsar Calcular.
-            cbOrigen.SelectedIndexChanged += (s, e) => txtDistancia.Text = string.Empty;
-            cbDestino.SelectedIndexChanged += (s, e) => txtDistancia.Text = string.Empty;
+            // La distancia se calcula sola cada vez que cambia el origen o el destino.
+            cbOrigen.SelectedIndexChanged += (s, e) => ActualizarDistancia();
+            cbDestino.SelectedIndexChanged += (s, e) => ActualizarDistancia();
             CargarTabla();
             Limpiar();
         }
@@ -62,10 +62,18 @@ namespace EcoResiduos.Presentation
             Tool.AsignarSeguro(numId, v.Id);
             cbOrigen.SelectedValue = v.OrigenId;
             cbDestino.SelectedValue = v.DestinoId;
-            MostrarDistancia(v.DistanciaMetros);
+            ActualizarDistancia();
         }
 
-        private void MostrarDistancia(double metros) => txtDistancia.Text = metros.ToString("0.00") + " m";
+        /// <summary>Muestra la distancia entre el origen y el destino elegidos (solo lectura).</summary>
+        private void ActualizarDistancia()
+        {
+            if (cbOrigen.SelectedValue is long o && cbDestino.SelectedValue is long d && o != d
+                && _ctx.Puntos.Exist(o) && _ctx.Puntos.Exist(d))
+                txtDistancia.Text = _servicio.DistanciaEuclidiana(o, d).ToString("0.00") + " m";
+            else
+                txtDistancia.Text = "—";
+        }
 
         // La distancia se pasa en 0 para que el servicio la calcule siempre con las coordenadas.
         private Via LeerFormulario() =>
@@ -73,19 +81,6 @@ namespace EcoResiduos.Presentation
                                cbOrigen.SelectedValue is long o ? o : 0,
                                cbDestino.SelectedValue is long d ? d : 0,
                                0);
-
-        private void btnCalcularDistancia_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (cbOrigen.SelectedValue is long o && cbDestino.SelectedValue is long d)
-                    MostrarDistancia(_servicio.DistanciaEuclidiana(o, d));
-            }
-            catch (EcoResiduosException ex)
-            {
-                Tool.MostrarError(ex);
-            }
-        }
 
         private void btnAgregar_Click(object? sender, EventArgs e)
         {
@@ -152,7 +147,7 @@ namespace EcoResiduos.Presentation
             Tool.AsignarSeguro(numId, Contexto.SiguienteId(_ctx.Vias.GetAll()));
             if (cbOrigen.Items.Count > 0) cbOrigen.SelectedIndex = 0;
             if (cbDestino.Items.Count > 1) cbDestino.SelectedIndex = 1;
-            txtDistancia.Text = string.Empty;
+            ActualizarDistancia();
         }
 
         private async void btnGuardar_Click(object? sender, EventArgs e)
@@ -160,8 +155,11 @@ namespace EcoResiduos.Presentation
             btnGuardar.Enabled = false;
             try
             {
+                int corregidas = _servicio.RecalcularDistancias();
+                if (corregidas > 0) CargarTabla();
                 await _ctx.Vias.CommitAsync();
-                MessageBox.Show("Vías guardadas en vias.txt. Cierre y vuelva a abrir el mapa para ver los cambios.",
+                string detalle = corregidas > 0 ? $"\nSe corrigió la distancia de {corregidas} vía(s) según las coordenadas." : "";
+                MessageBox.Show("Vías guardadas en vias.txt." + detalle,
                                 "Guardar", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)

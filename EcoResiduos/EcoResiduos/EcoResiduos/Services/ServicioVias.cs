@@ -23,6 +23,25 @@ namespace EcoResiduos.Services
             return Math.Round(Math.Sqrt((b.X - a.X) * (b.X - a.X) + (b.Y - a.Y) * (b.Y - a.Y)), 2);
         }
 
+        /// <summary>
+        /// Vuelve a calcular la distancia de todas las vías con las coordenadas actuales
+        /// (por si alguien cambió el archivo a mano o movió un punto). Devuelve cuántas cambiaron.
+        /// </summary>
+        public int RecalcularDistancias()
+        {
+            int cambiadas = 0;
+            foreach (Via v in _ctx.Vias.GetAll())
+            {
+                double distancia = DistanciaEuclidiana(v.OrigenId, v.DestinoId);
+                if (Math.Abs(distancia - v.DistanciaMetros) > 0.005)
+                {
+                    v.DistanciaMetros = distancia;
+                    cambiadas++;
+                }
+            }
+            return cambiadas;
+        }
+
         /// <summary>Valida la vía y, si la distancia es 0, la calcula con las coordenadas.</summary>
         public Via Preparar(long id, long origenId, long destinoId, double distancia)
         {
