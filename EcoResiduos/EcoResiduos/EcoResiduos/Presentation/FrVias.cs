@@ -20,6 +20,9 @@ namespace EcoResiduos.Presentation
             _servicio = new ServicioVias(_ctx);
             ConfigurarCombo(cbOrigen);
             ConfigurarCombo(cbDestino);
+            // Si cambia el origen o el destino, la distancia mostrada ya no vale: se borra hasta pulsar Calcular.
+            cbOrigen.SelectedIndexChanged += (s, e) => txtDistancia.Text = string.Empty;
+            cbDestino.SelectedIndexChanged += (s, e) => txtDistancia.Text = string.Empty;
             CargarTabla();
             Limpiar();
         }
@@ -59,21 +62,24 @@ namespace EcoResiduos.Presentation
             Tool.AsignarSeguro(numId, v.Id);
             cbOrigen.SelectedValue = v.OrigenId;
             cbDestino.SelectedValue = v.DestinoId;
-            Tool.AsignarSeguro(numDistancia, v.DistanciaMetros);
+            MostrarDistancia(v.DistanciaMetros);
         }
 
+        private void MostrarDistancia(double metros) => txtDistancia.Text = metros.ToString("0.00") + " m";
+
+        // La distancia se pasa en 0 para que el servicio la calcule siempre con las coordenadas.
         private Via LeerFormulario() =>
             _servicio.Preparar((long)numId.Value,
                                cbOrigen.SelectedValue is long o ? o : 0,
                                cbDestino.SelectedValue is long d ? d : 0,
-                               (double)numDistancia.Value);
+                               0);
 
         private void btnCalcularDistancia_Click(object? sender, EventArgs e)
         {
             try
             {
                 if (cbOrigen.SelectedValue is long o && cbDestino.SelectedValue is long d)
-                    Tool.AsignarSeguro(numDistancia, _servicio.DistanciaEuclidiana(o, d));
+                    MostrarDistancia(_servicio.DistanciaEuclidiana(o, d));
             }
             catch (EcoResiduosException ex)
             {
@@ -146,7 +152,7 @@ namespace EcoResiduos.Presentation
             Tool.AsignarSeguro(numId, Contexto.SiguienteId(_ctx.Vias.GetAll()));
             if (cbOrigen.Items.Count > 0) cbOrigen.SelectedIndex = 0;
             if (cbDestino.Items.Count > 1) cbDestino.SelectedIndex = 1;
-            numDistancia.Value = 0;
+            txtDistancia.Text = string.Empty;
         }
 
         private async void btnGuardar_Click(object? sender, EventArgs e)

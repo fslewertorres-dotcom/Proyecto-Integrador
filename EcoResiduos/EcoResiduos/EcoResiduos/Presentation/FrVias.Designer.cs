@@ -32,7 +32,7 @@ namespace EcoResiduos.Presentation
             lblDestino = new Label();
             cbDestino = new ComboBox();
             lblDistancia = new Label();
-            numDistancia = new NumericUpDown();
+            txtDistancia = new TextBox();
             btnCalcularDistancia = new Button();
             btnAgregar = new Button();
             btnActualizar = new Button();
@@ -45,7 +45,6 @@ namespace EcoResiduos.Presentation
             ((System.ComponentModel.ISupportInitialize)dgvVias).BeginInit();
             pnlFormulario.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numId).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numDistancia).BeginInit();
             SuspendLayout();
             // 
             // pnlEncabezado
@@ -121,7 +120,7 @@ namespace EcoResiduos.Presentation
             pnlFormulario.Controls.Add(lblDestino);
             pnlFormulario.Controls.Add(cbDestino);
             pnlFormulario.Controls.Add(lblDistancia);
-            pnlFormulario.Controls.Add(numDistancia);
+            pnlFormulario.Controls.Add(txtDistancia);
             pnlFormulario.Controls.Add(btnCalcularDistancia);
             pnlFormulario.Controls.Add(btnAgregar);
             pnlFormulario.Controls.Add(btnActualizar);
@@ -207,16 +206,17 @@ namespace EcoResiduos.Presentation
             lblDistancia.Text = "Distancia (m)";
             lblDistancia.Name = "lblDistancia";
             // 
-            // numDistancia
-            // 
-            numDistancia.DecimalPlaces = 2;
-            numDistancia.Location = new Point(16, 222);
-            numDistancia.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
-            numDistancia.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
-            numDistancia.Size = new Size(190, 23);
-            numDistancia.Value = new decimal(new int[] { 0, 0, 0, 0 });
-            numDistancia.Font = new Font("Segoe UI", 9.75F);
-            numDistancia.Name = "numDistancia";
+            // txtDistancia (solo lectura: la distancia la calcula el sistema)
+            //
+            txtDistancia.BackColor = Color.FromArgb(240, 245, 241);
+            txtDistancia.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            txtDistancia.ForeColor = Color.FromArgb(30, 86, 49);
+            txtDistancia.Location = new Point(130, 223);
+            txtDistancia.ReadOnly = true;
+            txtDistancia.Size = new Size(190, 25);
+            txtDistancia.TabStop = false;
+            txtDistancia.TextAlign = HorizontalAlignment.Center;
+            txtDistancia.Name = "txtDistancia";
             // 
             // btnCalcularDistancia
             // 
@@ -226,7 +226,7 @@ namespace EcoResiduos.Presentation
             btnCalcularDistancia.FlatStyle = FlatStyle.Flat;
             btnCalcularDistancia.Cursor = Cursors.Hand;
             btnCalcularDistancia.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnCalcularDistancia.Location = new Point(214, 220);
+            btnCalcularDistancia.Location = new Point(16, 220);
             btnCalcularDistancia.Size = new Size(106, 30);
             btnCalcularDistancia.Text = "Calcular";
             btnCalcularDistancia.UseVisualStyleBackColor = false;
@@ -314,7 +314,7 @@ namespace EcoResiduos.Presentation
             lblNota.ForeColor = Color.FromArgb(107, 123, 113);
             lblNota.Location = new Point(16, 406);
             lblNota.Size = new Size(304, 34);
-            lblNota.Text = "Si deja la distancia en 0 se calcula con las coordenadas. Después de cambiar vías, vuelva a abrir el mapa.";
+            lblNota.Text = "La distancia se calcula con las coordenadas de los dos puntos. Después de cambiar vías, vuelva a abrir el mapa.";
             lblNota.Name = "lblNota";
             // 
             // FrVias
@@ -330,7 +330,6 @@ namespace EcoResiduos.Presentation
             Controls.Add(pnlTabla);
             Controls.Add(pnlFormulario);
             Name = "FrVias";
-            ((System.ComponentModel.ISupportInitialize)numDistancia).EndInit();
             ((System.ComponentModel.ISupportInitialize)numId).EndInit();
             pnlFormulario.ResumeLayout(false);
             pnlFormulario.PerformLayout();
@@ -360,7 +359,7 @@ namespace EcoResiduos.Presentation
         private Label lblDestino;
         private ComboBox cbDestino;
         private Label lblDistancia;
-        private NumericUpDown numDistancia;
+        private TextBox txtDistancia;
         private Button btnCalcularDistancia;
         private Button btnAgregar;
         private Button btnActualizar;
