@@ -33,7 +33,6 @@ namespace EcoResiduos.Presentation
             mnuHistorico = new ToolStripMenuItem();
             mnuCalculos = new ToolStripMenuItem();
             mnuIndicadores = new ToolStripMenuItem();
-            mnuRendimiento = new ToolStripMenuItem();
             estado = new StatusStrip();
             lblUsuario = new ToolStripStatusLabel();
             lblReloj = new ToolStripStatusLabel();
@@ -117,7 +116,7 @@ namespace EcoResiduos.Presentation
             // 
             // mnuAnalisis
             // 
-            mnuAnalisis.DropDownItems.AddRange(new ToolStripItem[] { mnuHistorico, mnuCalculos, mnuIndicadores, mnuRendimiento });
+            mnuAnalisis.DropDownItems.AddRange(new ToolStripItem[] { mnuHistorico, mnuCalculos, mnuIndicadores });
             mnuAnalisis.Name = "mnuAnalisis";
             mnuAnalisis.Text = "A&nálisis";
             // 
@@ -138,12 +137,6 @@ namespace EcoResiduos.Presentation
             mnuIndicadores.Name = "mnuIndicadores";
             mnuIndicadores.Text = "Indicadores";
             mnuIndicadores.Click += mnuIndicadores_Click;
-            // 
-            // mnuRendimiento
-            // 
-            mnuRendimiento.Name = "mnuRendimiento";
-            mnuRendimiento.Text = "Comparación de algoritmos";
-            mnuRendimiento.Click += mnuRendimiento_Click;
             // 
             // estado
             // 
@@ -205,7 +198,6 @@ namespace EcoResiduos.Presentation
         private ToolStripMenuItem mnuHistorico;
         private ToolStripMenuItem mnuCalculos;
         private ToolStripMenuItem mnuIndicadores;
-        private ToolStripMenuItem mnuRendimiento;
         private StatusStrip estado;
         private ToolStripStatusLabel lblUsuario;
         private ToolStripStatusLabel lblReloj;

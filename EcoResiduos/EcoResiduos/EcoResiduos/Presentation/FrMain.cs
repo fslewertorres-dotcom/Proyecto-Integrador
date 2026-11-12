@@ -153,7 +153,6 @@ namespace EcoResiduos.Presentation
         private void mnuHistorico_Click(object? sender, EventArgs e) { Tool.openForm<FrHistorico>(this); }
         private void mnuCalculos_Click(object? sender, EventArgs e) { Tool.openForm<FrCalculos>(this); }
         private void mnuIndicadores_Click(object? sender, EventArgs e) { Tool.openForm<FrIndicadores>(this); }
-        private void mnuRendimiento_Click(object? sender, EventArgs e) { Tool.openForm<FrRendimiento>(this); }
 
         private async void mnuGuardarTodo_Click(object? sender, EventArgs e)
         {

@@ -21,7 +21,7 @@ Sistema de gestión de residuos para un conjunto de 96 casas: prioriza los conte
 | `DynamicStructure/` | **Estructuras propias**: `Lista` (doblemente enlazada), `ColaPrioridad` (min-heap), `Grafo` (+ Dijkstra), `Ordenamiento` (QuickSort, búsqueda binaria y lineal) |
 | `Persistence/` | `DataStore<T>`: lee y escribe los `.txt` (sincrónico y **asíncrono**) |
 | `Infraestructure/` | `Repository<T,E>` (Lista + `Dictionary` como índice), `Contexto` (Singleton), `Sesion` |
-| `Services/` | Prioridad, rutas, recolección, indicadores, autenticación, rendimiento |
+| `Services/` | Prioridad, rutas, recolección, indicadores, autenticación |
 | `Services/Calculo/` | **Módulo de cálculo**: `ModeloGeneracion` G(lugar, día, hora), `Prediccion` (integral con Simpson), `ModeloCosto` T(d,n) y C(d,n), `Optimizacion` (gradiente) |
 | `Tools/` | `Tool` (ayudas) y `Tema` (colores y estilos de todo el programa) |
 | `Exceptions/` | Excepciones propias (`ValidacionException`, `DatosInvalidosException`…) |
@@ -39,7 +39,6 @@ Sistema de gestión de residuos para un conjunto de 96 casas: prioriza los conte
 3. **Análisis → Módulo de cálculo**: predicción de llenado (resultado y gráfico) y ubicación óptima (★ y el camino morado en el mapa).
 4. **Análisis → Histórico**: ordenar con QuickSort y buscar un día con búsqueda binaria.
 5. **Análisis → Indicadores**: aprovechamiento, kg/casa/día, ruta de hoy vs. ronda tradicional (785 m → 557 m, 29 % menos) y frecuencia por punto.
-6. **Análisis → Comparación de algoritmos**: tiempos y comparaciones contra n·log₂n y log₂n.
 
 ## Qué cubre de cada materia
 | Materia | Dónde está |
@@ -72,7 +71,6 @@ Cada uno debe poder explicar su parte en la sustentación.
 - [ ] Crear el repositorio en GitHub y subir esta base (primer commit).
 
 **Persona 2 – Estructuras y ruta**
-- [x] `FrRendimiento`: Análisis → Comparación de algoritmos (n = 1.000, 10.000 y 100.000).
 - [x] `Documentos/AnalisisBigO.md` (falta copiar las medidas de su PC en la sección 4).
 
 **Persona 3 – Mapa y cálculo**
