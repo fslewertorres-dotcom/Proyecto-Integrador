@@ -1,18 +1,18 @@
 # Id;Nombre;Tipo;X(m);Y(m);CasasAtendidas
 1;Cuarto de acopio;Acopio;4;156;0
-11;Punto ecológico Vía 1;PuntoEcologico;12;19;24
-12;Punto ecológico Vía 2;PuntoEcologico;12;57;24
-13;Punto ecológico Vía 3;PuntoEcologico;12;95;24
-14;Punto ecológico Vía 4;PuntoEcologico;12;133;24
+11;Punto ecológico Vía 4;PuntoEcologico;12;19;24
+12;Punto ecológico Vía 3;PuntoEcologico;12;57;24
+13;Punto ecológico Vía 2;PuntoEcologico;12;95;24
+14;Punto ecológico Vía 1;PuntoEcologico;12;133;24
 21;Piscina;Piscina;88;20;0
 22;Gimnasio;Gimnasio;88;50;0
 23;Zona de asados;ZonaAsados;88;85;0
 24;Parque infantil;ParqueInfantil;88;122;0
-31;Cruce Vía 1 - Vía principal;Interseccion;4;19;0
-32;Cruce Vía 2 - Vía principal;Interseccion;4;57;0
-33;Cruce Vía 3 - Vía principal;Interseccion;4;95;0
-34;Cruce Vía 4 - Vía principal;Interseccion;4;133;0
-41;Cruce Vía 1 - Sendero;Interseccion;82;19;0
-42;Cruce Vía 2 - Sendero;Interseccion;82;57;0
-43;Cruce Vía 3 - Sendero;Interseccion;82;95;0
-44;Cruce Vía 4 - Sendero;Interseccion;82;133;0
+31;Cruce Vía 4 - Vía principal;Interseccion;4;19;0
+32;Cruce Vía 3 - Vía principal;Interseccion;4;57;0
+33;Cruce Vía 2 - Vía principal;Interseccion;4;95;0
+34;Cruce Vía 1 - Vía principal;Interseccion;4;133;0
+41;Cruce Vía 4 - Sendero;Interseccion;82;19;0
+42;Cruce Vía 3 - Sendero;Interseccion;82;57;0
+43;Cruce Vía 2 - Sendero;Interseccion;82;95;0
+44;Cruce Vía 1 - Sendero;Interseccion;82;133;0

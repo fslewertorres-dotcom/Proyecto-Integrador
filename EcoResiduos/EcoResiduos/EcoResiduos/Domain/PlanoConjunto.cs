@@ -105,8 +105,8 @@ namespace EcoResiduos.Domain
                 for (int c = 0; c < CasasPorHilera; c++)
                 {
                     Rectangulo lote = new Rectangulo(8 + c * FrenteCasa, YHileras[h], FrenteCasa, FondoCasa);
-                    // Las hileras 1-2 dan a la vía 1, 3-4 a la vía 2, etc.
-                    casas[n] = new Casa(n + 1, h + 1, h / 2 + 1, lote);
+                    // Las vías se numeran de abajo hacia arriba: hileras 7-8 dan a la vía 1, 5-6 a la vía 2, ..., 1-2 a la vía 4.
+                    casas[n] = new Casa(n + 1, h + 1, YVias.Length - h / 2, lote);
                     n++;
                 }
             }

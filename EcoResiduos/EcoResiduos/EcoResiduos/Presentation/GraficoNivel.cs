@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using EcoResiduos.Tools;
 
 namespace EcoResiduos.Presentation
@@ -11,6 +12,8 @@ namespace EcoResiduos.Presentation
         private double[] _valores = new double[0];
         private string[] _etiquetas = new string[0];
 
+        // Se asigna en tiempo de ejecución (FrCalculos), no desde el diseñador.
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Titulo { get; set; } = "Nivel proyectado en las próximas 24 horas";
 
         public GraficoNivel()

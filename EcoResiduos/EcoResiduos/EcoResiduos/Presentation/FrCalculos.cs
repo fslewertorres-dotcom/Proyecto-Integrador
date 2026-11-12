@@ -230,7 +230,8 @@ namespace EcoResiduos.Presentation
         /// <summary>El punto ecológico más cercano al centro de la vía indicada.</summary>
         private PuntoRecoleccion? PuntoEcologicoDeVia(int via)
         {
-            double yVia = PlanoConjunto.YVias[via - 1];
+            // Vía 1 = la de abajo (YVias está ordenado de arriba hacia abajo)
+            double yVia = PlanoConjunto.YVias[PlanoConjunto.YVias.Length - via];
             PuntoRecoleccion? mejor = null;
             foreach (PuntoRecoleccion p in _ctx.Puntos.GetAll())
             {
